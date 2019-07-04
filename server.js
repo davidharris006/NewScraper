@@ -1,38 +1,54 @@
 var cheerio = require("cheerio");
 var axios = require("axios");
 var express = require("express")
-var expressHandlebar = require("express-handlebars")
+var exphbs = require("express-handlebars");
+var PORT = process.env.PORT || 8080;
+var app = express()
+
+
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
 
 
 
-// First, tell the console what server2.js is doing
 console.log("");
 
-// Making a request via axios for `nhl.com`'s homepage
+var results = [];
 axios.get("https://www.huffpost.com/").then(function(response) {
-
-  // Load the body of the HTML into cheerio
+  
   var $ = cheerio.load(response.data);
-
-  // Empty array to save our scraped data
-  var results = [];
-
-  // With cheerio, find each h4-tag with the class "headline-link" and loop through the results
+  
+  
   $("div.card__headline__text").each(function(i, element) {
-
-    // Save the text of the h4-tag as "title"
+    
     var title = $(element).text();
-
-    // Find the h4 tag's parent a-tag, and save it's href value as "link"
+    
     var link = $(element).parent().attr("href");
+    
+    var image = $(element).parents("div.card__content").find("img.card__image__src").attr("src");
 
-    // Make an object with data we scraped for this h4 and push it to the results array
     results.push({
       title: title,
-      link: link
+      link: link,
+      image: image
     });
   });
 
-  // After looping through each h4.headline-link, log the results
+  
+  
+  
+  
+  
   console.log(results);
+}).then(function(){
+
+  app.get("/", function(req, res) {
+    
+    res.render("index", {result : results});
+    
+  });
+})
+
+app.listen(PORT, function() {
+  console.log("Server listening on: http://localhost:" + PORT);
 });
