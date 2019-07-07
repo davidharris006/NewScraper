@@ -1,5 +1,15 @@
 <ol>
     {{#each result}}
-    <li><img src={{image}} alt="">{{title}} <a href="{{link}}">Link to the article!</a></li>
+    <li dataid={{dataid}}><img src={{image}} alt="">{{title}} <a href="{{link}}">Link to the article!</a></li>
+    <br>
+    {{#each comments}}
+    <div class="comments">
+
+    {{this}}
+    </div>
+    {{/each}}
+    <textarea name="comment" id="{{dataid}}" cols="30" rows="10"></textarea>
+    <button class="submitbtn">Submit</button>
     {{/each}}
 </ol>
+
